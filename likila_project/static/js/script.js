@@ -365,7 +365,7 @@ async function loadSettings() {
 
     // Wire up clickable contact links
     const waNumber = (s.whatsapp || '').replace(/[^0-9]/g, '');
-    document.getElementById('link-whatsapp').href  = waNumber ? `https://wa.me/${+26662401920}' : '#contact';
+    document.getElementById('link-whatsapp').href  = waNumber ? 'https://wa.me/${+26662401920}' : '#contact';
     document.getElementById('link-facebook').href  = s.facebook || 'https://web.facebook.com/profile.php?id=100054594153845';
     document.getElementById('link-email').href     = `mailto:${s.email || 'likilatours@gmail.com'}`;
     document.getElementById('link-location').href  = `https://www.google.com/maps/search/${encodeURIComponent(s.location || 'Botha-Buthe, Lesotho')}`;
