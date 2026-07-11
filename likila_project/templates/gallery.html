@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — Likila Travel & Tours</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --sky: #0BB5D6; --sky-dark: #0891B2; --sky-deep: #06557A; --sky-pale: #E0F7FC;
+  --dark: #0D1B2A; --dark-2: #1A2D3E; --text-muted: #6B8A9A; --off-white: #F8FAFB;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-body); background: var(--dark); color: white; min-height: 100vh; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 5%;
+  background: rgba(13,27,42,0.95); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(11,181,214,0.15);
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nav-logo-mark {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky), var(--sky-deep));
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.nav-logo-mark img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.nav-logo-mark svg { width: 20px; height: 20px; fill: white; }
+.nav-wordmark { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--sky); line-height: 1.1; }
+.nav-wordmark span { display: block; font-size: 0.62rem; font-family: var(--font-body); font-weight: 400; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+.nav-back {
+  display: flex; align-items: center; gap: 6px;
+  color: rgba(255,255,255,0.65); text-decoration: none; font-size: 0.88rem;
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 0.45rem 1rem;
+  transition: all 0.2s;
+}
+.nav-back:hover { color: white; border-color: rgba(255,255,255,0.5); }
+.nav-back svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* ── HEADER ── */
+.page-header {
+  padding: 4rem 5% 3rem;
+  background: linear-gradient(to bottom, rgba(6,85,122,0.3) 0%, transparent 100%);
+  text-align: center;
+}
+.page-header .label {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase;
+  font-weight: 600; color: var(--sky); margin-bottom: 1rem;
+}
+.page-header .label::before { content: ''; width: 24px; height: 2px; background: var(--sky); }
+.page-header h1 {
+  font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700; color: white; margin-bottom: 0.75rem;
+}
+.page-header p { font-size: 1rem; color: rgba(255,255,255,0.55); max-width: 480px; margin: 0 auto; }
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+  padding: 0 5% 2rem;
+}
+.filter-btn {
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.65); border-radius: 50px; padding: 0.4rem 1rem;
+  font-size: 0.8rem; font-family: var(--font-body); cursor: pointer; transition: all 0.2s;
+}
+.filter-btn:hover { border-color: var(--sky); color: var(--sky); }
+.filter-btn.active { background: var(--sky); border-color: var(--sky); color: white; }
+
+/* ── MASONRY GRID ── */
+.gallery-wrap { padding: 0 5% 5rem; }
+.masonry {
+  columns: 4; column-gap: 1rem;
+}
+.masonry-item {
+  break-inside: avoid; margin-bottom: 1rem;
+  border-radius: 12px; overflow: hidden; cursor: pointer;
+  position: relative; display: block;
+}
+.masonry-item img {
+  width: 100%; display: block;
+  transition: transform 0.4s ease;
+}
+.masonry-item:hover img { transform: scale(1.04); }
+.masonry-item-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(6,40,70,0.8) 0%, transparent 50%);
+  opacity: 0; transition: opacity 0.3s;
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 1rem;
+}
+.masonry-item:hover .masonry-item-overlay { opacity: 1; }
+.masonry-item-caption { font-size: 0.85rem; font-weight: 500; color: white; }
+.masonry-item-meta { font-size: 0.72rem; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+/* Empty state */
+.empty {
+  text-align: center; padding: 5rem 2rem; color: rgba(255,255,255,0.35);
+}
+.empty svg { width: 48px; height: 48px; stroke: currentColor; fill: none; stroke-width: 1.2; margin: 0 auto 1rem; display: block; }
+.empty p { font-size: 1rem; }
+
+/* ── LIGHTBOX ── */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,0.94); align-items: center; justify-content: center;
+  padding: 1rem;
+}
+.lightbox.open { display: flex; }
+.lightbox-inner { position: relative; max-width: 90vw; max-height: 90vh; }
+.lightbox img {
+  max-width: 90vw; max-height: 82vh;
+  border-radius: 10px; object-fit: contain; display: block;
+}
+.lightbox-close {
+  position: fixed; top: 1.25rem; right: 1.25rem;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; transition: background 0.2s; z-index: 1000;
+}
+.lightbox-close:hover { background: rgba(255,255,255,0.2); }
+.lightbox-caption {
+  text-align: center; margin-top: 0.75rem;
+  color: rgba(255,255,255,0.7); font-size: 0.88rem;
+}
+.lightbox-nav {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background 0.2s;
+}
+.lightbox-nav:hover { background: rgba(11,181,214,0.4); }
+.lightbox-nav.prev { left: 1rem; }
+.lightbox-nav.next { right: 1rem; }
+.lightbox-nav svg { width: 18px; height: 18px; stroke: white; fill: none; stroke-width: 2; }
+.lightbox-counter {
+  position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%);
+  font-size: 0.78rem; color: rgba(255,255,255,0.4); letter-spacing: 0.08em;
+}
+
+@media (max-width: 900px) { .masonry { columns: 3; } }
+@media (max-width: 600px) { .masonry { columns: 2; } .page-header { padding: 2.5rem 5% 2rem; } }
+@media (max-width: 380px) { .masonry { columns: 1; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="nav-logo-mark">
+      <img src="/static/images/WhatsApp Image 2026-06-05 at 19.40.28.jpeg" alt="Likila logo"
+           onerror="this.onerror=null;this.outerHTML='<svg viewBox=\'0 0 24 24\' style=\'width:20px;height:20px;fill:white\'><path d=\'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z\'/></svg>'">
+    </div>
+    <div class="nav-wordmark">Likila Travel<span>& Tours</span></div>
+  </a>
+  <a href="/" class="nav-back">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to site
+  </a>
+</nav>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="label">Our Memories</div>
+  <h1>Photo Gallery</h1>
+  <p>Moments captured across Lesotho's mountains, dams, villages, and festivals.</p>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filter-bar">
+  <button class="filter-btn active" data-cat="all">All</button>
+  {% for cat in categories %}
+  <button class="filter-btn" data-cat="{{ cat }}">{{ cat }}</button>
+  {% endfor %}
+</div>
+
+<!-- GRID -->
+<div class="gallery-wrap">
+  {% if photos %}
+  <div class="masonry" id="masonry">
+    {% for photo in photos %}
+    <div class="masonry-item"
+         data-cat="{{ photo.category|default:'Uncategorised' }}"
+         data-index="{{ forloop.counter0 }}"
+         onclick="openLightbox({{ forloop.counter0 }})">
+      <img
+        src="{{ photo.display_url }}"
+        alt="{{ photo.caption }}"
+        loading="{{ forloop.counter0|yesno:'eager,lazy,lazy' }}"
+      >
+      <div class="masonry-item-overlay">
+        <div class="masonry-item-caption">{{ photo.caption }}</div>
+        <div class="masonry-item-meta">
+          {{ photo.category }}{% if photo.year %} · {{ photo.year }}{% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    <p>No photos uploaded yet. Add some from Django admin.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav prev" onclick="shiftLightbox(-1)">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div class="lightbox-inner">
+    <img id="lightbox-img" src="" alt="">
+    <div class="lightbox-caption" id="lightbox-caption"></div>
+  </div>
+  <button class="lightbox-nav next" onclick="shiftLightbox(1)">
+    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+  </button>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
+<script>
+// Build photo data array from Django template
+const PHOTOS = [
+  {% for photo in photos %}
+  {
+    src: "{{ photo.display_url }}",
+    caption: "{{ photo.caption }}",
+    category: "{{ photo.category|default:'Uncategorised' }}",
+    year: "{% if photo.year %}{{ photo.year }}{% endif %}"
+  }{% if not forloop.last %},{% endif %}
+  {% endfor %}
+];
+
+// Visible indices (updated by filter)
+let visibleIndices = PHOTOS.map((_, i) => i);
+let lightboxPos = 0;
+
+/* ── FILTER ── */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cat = btn.dataset.cat;
+    const items = document.querySelectorAll('.masonry-item');
+    visibleIndices = [];
+    items.forEach(item => {
+      const show = cat === 'all' || item.dataset.cat === cat;
+      item.style.display = show ? 'block' : 'none';
+      if (show) visibleIndices.push(parseInt(item.dataset.index));
+    });
+  });
+});
+
+/* ── LIGHTBOX ── */
+function openLightbox(globalIndex) {
+  lightboxPos = visibleIndices.indexOf(globalIndex);
+  if (lightboxPos === -1) lightboxPos = 0;
+  showLightboxPhoto();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function showLightboxPhoto() {
+  const idx = visibleIndices[lightboxPos];
+  const p = PHOTOS[idx];
+  document.getElementById('lightbox-img').src = p.src;
+  document.getElementById('lightbox-caption').textContent =
+    p.caption + (p.category ? ' · ' + p.category : '') + (p.year ? ' · ' + p.year : '');
+  document.getElementById('lightbox-counter').textContent =
+    `${lightboxPos + 1} / ${visibleIndices.length}`;
+}
+
+function shiftLightbox(dir) {
+  lightboxPos = (lightboxPos + dir + visibleIndices.length) % visibleIndices.length;
+  showLightboxPhoto();
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeLightbox();
+});
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'Escape')     closeLightbox();
+  if (e.key === 'ArrowRight') shiftLightbox(1);
+  if (e.key === 'ArrowLeft')  shiftLightbox(-1);
+});
+</script>
+</body>
+</html>
